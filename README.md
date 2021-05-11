@@ -1,6 +1,6 @@
 # svartools
 
-## svartools is a set of commands that process multiFASTA files. There are three main positional arguments: extract, check and count. 
+### svartools is a set of commands that process multiFASTA files. There are three main positional arguments: extract, check and count. 
 
 #### Usage:
 ```
