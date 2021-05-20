@@ -56,8 +56,8 @@ optional arguments:
   -r REFERENCE, --reference REFERENCE
                         Specify the identifier of the reference to use
   -gaps, --gaps         Option to incude gaps                        
-  -nuc, -nucleotides    Create nucleotide count table
-  -aa, -aminoacids      Create amino acid frequency table
+  -nuc, --nucleotides    Create nucleotide count table
+  -aa, --aminoacids      Create amino acid frequency table
 ```
 
 #### Output:
