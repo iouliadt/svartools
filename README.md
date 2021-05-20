@@ -55,10 +55,9 @@ optional arguments:
                         Optional output file name
   -r REFERENCE, --reference REFERENCE
                         Specify the identifier of the reference to use
+  -gaps, --gaps         Option to incude gaps                        
   -nuc, -nucleotides    Create nucleotide count table
   -aa, -aminoacids      Create amino acid frequency table
-(base) 192:svartools juliatsatsani$ python svartools.py check -h
-usage: svartools.py check [-h] [-aln ALIGNMENT] [-o OUTFILE]
 ```
 
 #### Output:
