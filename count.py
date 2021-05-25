@@ -284,3 +284,28 @@ if svt.args.nuc:
                 nbnonsyn = NSsub_mat[sub]["syn"].keys()
                 SUMNUC.write(str(refnuc) + "\t" + str(dbnuc) + "\t" +
                              str(sub_mat[refnuc][dbnuc]) + "\n")
+
+if svt.args.nuc:
+
+    # Total number of mutations that are in non-synonymous or synonymous codons
+    with open("{}_dnds.sum.txt".format(fileName), "a") as SUMDNDS:
+        SUMDNDS.write("RefNuc\tdbNuc\tNonSyn\tSyn\n")
+
+        for sub in NSnucfreq.keys():
+
+            if "-" not in sub:
+
+                refnuc = sub.split("=>")[0]
+                dbnuc = sub.split("=>")[1]
+
+                if NSnucfreq[sub]["nonsyn"]:
+                    ns_cnt = NSnucfreq[sub]["nonsyn"]
+                else:
+                    ns_cnt = 0
+                if NSnucfreq[sub]["syn"]:
+                    s_cnt = NSnucfreq[sub]["syn"]
+                else:
+                    s_cnt = 0
+
+                SUMDNDS.write(refnuc + "\t" + dbnuc +
+                            "\t" + str(ns_cnt) + "\t" + str(s_cnt) + "\n")
