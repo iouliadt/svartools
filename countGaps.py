@@ -318,4 +318,4 @@ if pa.args.nucleotides:
                 s_cnt = 0
 
             SUMDNDS.write(refnuc + "\t" + dbnuc +
-                          "\t" + ns_cnt + "\t" + s_cnt + "\n")
+                          "\t" + str(ns_cnt) + "\t" + str(s_cnt) + "\n")

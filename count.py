@@ -1,4 +1,3 @@
-from collections import defaultdict
 from Bio import SeqIO
 from math import *
 import parseArgs as pa
@@ -38,7 +37,6 @@ def increment(dict, key):
         dict[key] += 1
     else:
         dict[key] = 1
-
 
 # create reference codons
 for i in range(0, len(ref), 3):
@@ -100,6 +98,7 @@ for seq in fasta_dict.keys():
 
         if raa == qaa and rcodon != qcodon and '-' not in raa:
             # if the codons are not equal then store the changes e.g. A=>T as synonymous
+
             for cpos in range(3):
 
                 if ref[cpos+i] != query[cpos+i]:
@@ -169,7 +168,6 @@ if pa.args.aminoacids:
 
         FREQ.write("Mutation\tRef_aa\tRef_polarity\taa_position\tQuery_aa\tQuery_polarity\tfrequency\tcount\n")
 
-
 ent = AutoVivification()
 ref_polarity = AutoVivification()
 shannon = ''
@@ -196,9 +194,7 @@ for aapos in sorted(mutfreq.keys()):
         ref_polarity[aapos] = polarity[residue[0]]
 
         if residue[0] != residue[1]:
-
             if pa.args.aminoacids:
-
                 with open("{}_mutfreq.txt".format(fileName), 'a') as FREQ:
                     FREQ.write(mut + "\t" + residue[0] + "\t" + polarity[residue[0]]
                                + "\t" + str(aapos) + "\t" + residue[1] + "\t" + polarity[residue[1]]
@@ -208,7 +204,6 @@ for aapos in sorted(mutfreq.keys()):
                     dnds[aapos]["syn"] = 0
                 if isinstance(dnds[aapos]["nonsyn"], AutoVivification):
                     dnds[aapos]["nonsyn"] = 0
-
                 with open("{}_entropy.txt".format(fileName), 'a') as ENT:
                     if dnds[aapos]["syn"] > 0:
 
@@ -271,6 +266,7 @@ if pa.args.nucleotides:
 
         nucs = nucfreq[i].keys()
 
+
 # Total number of sites where particular substitutions are observed
     with open("{}_nucfreq.sum.txt".format(fileName), "a") as SUMNUC:
         SUMNUC.write("RefNuc\tdbNuc\tNbSitesWithChange\n")
@@ -308,4 +304,4 @@ if pa.args.nucleotides:
                     s_cnt = 0
 
                 SUMDNDS.write(refnuc + "\t" + dbnuc +
-                              "\t" + str(ns_cnt) + "\t" + str(s_cnt) + "\n")
+                            "\t" + str(ns_cnt) + "\t" + str(s_cnt) + "\n")
