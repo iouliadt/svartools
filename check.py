@@ -1,5 +1,5 @@
 from Bio import SeqIO
-import svartools as svt
+import parseArgs as pa
 
 
 # Function to create check format table
@@ -8,16 +8,16 @@ def checkFormat():
     seq_IDs = []
 
     # * Parse fasta
-    fastaFile = SeqIO.parse(svt.args.alignment, "fasta")
+    fastaFile = SeqIO.parse(pa.args.alignment, "fasta")
     for record in fastaFile:
         sequences.append(record.seq)
         seq_IDs.append(record.id)
 
-    # Create checkFormat table and write to file
-    if svt.args.outfile:
-        fileName = svt.args.outfile
+    # Create checkFormat table and write to file   # ! TODO: do this only once
+    if pa.args.outfile:
+        fileName = pa.args.outfile
     else:
-        fileName = svt.args.alignment
+        fileName = pa.args.alignment
 
     # Calculate length, count Ns, gaps, codons, IUPAC ambiguous chars
     with open("{}_checkFormat.txt".format(fileName), "w") as f:
@@ -36,3 +36,4 @@ def checkFormat():
             + sequences[i].count('H') + sequences[i].count('V')
             print(IDs, "\t", length, "\t", codons, "\t",
                   Ns, "\t", gaps, "\t", ambiguities, file=f,)
+

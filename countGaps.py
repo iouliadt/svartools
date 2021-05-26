@@ -1,4 +1,3 @@
-from collections import defaultdict
 from Bio import SeqIO
 from math import *
 import parseArgs as pa
@@ -15,7 +14,7 @@ fasta_dict = SeqIO.to_dict(SeqIO.parse(input_file, "fasta"))
 
 if pa.args.reference is None:
 
-    print("Warning: you have not specified a reference identifier"
+    print("warning: you have not specified a reference identifier"
           " to tabulate the mutations against, the coordinates"
           " will be relative to the alignment position.")
 
@@ -95,11 +94,11 @@ for seq in fasta_dict.keys():
         aapos = int(((i-refgap)/3)+1)
         mut = str(raa)+str(aapos)+str(qaa)
 
-        if (raa != '-'):
-            increment(mutfreq[aapos], mut)
+        increment(mutfreq[aapos], mut)
 
-        if raa == qaa and rcodon != qcodon and '-' not in raa:
+        if raa == qaa and rcodon != qcodon:
             # if the codons are not equal then store the changes e.g. A=>T as synonymous
+
             for cpos in range(3):
 
                 if ref[cpos+i] != query[cpos+i]:
@@ -116,15 +115,17 @@ for seq in fasta_dict.keys():
 
             increment(dnds[aapos], "syn")
 
+        elif raa == qaa and rcodon != qcodon:
+
             for j in range(3):
 
-                if ref[i+j] != query[i+j] and '-' or '*' not in raa and qaa:
+                if ref[i+j] != query[i+j] and '*' not in raa or qaa:
                     sub = str(ref[i+j]+query[i+j])
 
                     increment(NSsub_mat[sub]["syn"], aapos)
 
         # if the codons are not equal then store the changes e.g. A=>T as NON-synonymous
-        elif raa != qaa and '-' not in raa:
+        elif raa != qaa:
 
             for cpos in range(3):
 
@@ -142,7 +143,7 @@ for seq in fasta_dict.keys():
             increment(dnds[aapos], "nonsyn")
 
             for j in range(3):
-                if ref[i+j] != query[i+j] and '-' or '*' not in raa or qaa:
+                if ref[i+j] != query[i+j] and '*' not in raa and qaa:
                     # raa != '-' or '*' and qaa != '-' or '*'
                     sub = str(ref[i+j])+str(query[i+j])
                     increment(NSsub_mat[sub]["nonsyn"], aapos)
@@ -157,23 +158,26 @@ for seq in fasta_dict.keys():
 
 # create file name according to user input
 if pa.args.outfile:
+
     fileName = pa.args.outfile
 else:
     fileName = pa.args.alignment
 
 # Open files and write headers
 if pa.args.aminoacids:
+
     with open("{}_entropy.txt".format(fileName), 'a') as ENT, open("{}_mutfreq.txt".format(fileName), 'a') as FREQ:
 
         ENT.write("aa_position\tRef_aa\tentropy\tentropy(base 2)\tnb_nonsyn\tnb_syn\tdN/dS\n")
 
         FREQ.write("Mutation\tRef_aa\tRef_polarity\taa_position\tQuery_aa\tQuery_polarity\tfrequency\tcount\n")
 
-
 ent = AutoVivification()
 ref_polarity = AutoVivification()
 shannon = ''
 shannon2 = ''
+
+# print(nucfreq)
 
 for aapos in sorted(mutfreq.keys()):
 
@@ -196,9 +200,7 @@ for aapos in sorted(mutfreq.keys()):
         ref_polarity[aapos] = polarity[residue[0]]
 
         if residue[0] != residue[1]:
-
             if pa.args.aminoacids:
-
                 with open("{}_mutfreq.txt".format(fileName), 'a') as FREQ:
                     FREQ.write(mut + "\t" + residue[0] + "\t" + polarity[residue[0]]
                                + "\t" + str(aapos) + "\t" + residue[1] + "\t" + polarity[residue[1]]
@@ -208,7 +210,6 @@ for aapos in sorted(mutfreq.keys()):
                     dnds[aapos]["syn"] = 0
                 if isinstance(dnds[aapos]["nonsyn"], AutoVivification):
                     dnds[aapos]["nonsyn"] = 0
-
                 with open("{}_entropy.txt".format(fileName), 'a') as ENT:
                     if dnds[aapos]["syn"] > 0:
 
@@ -228,7 +229,7 @@ if pa.args.nucleotides:
 
     with open("{}_nucfreq.txt".format(fileName), 'a') as NUC:
 
-        NUC.write("NucSite\taa_position\tRefNuc\tAsyn\tAnonsyn\tTsyn\tTnonsyn\tGsyn\tGnonsyn\tCsyn\tCnonsyn\tentropy\tRef_polarity\n")
+        NUC.write("NucSite\taa_position\tRefNuc\tAsyn\tAnonsyn\tTsyn\tTnonsyn\tGsyn\tGnonsyn\tCsyn\tCnonsyn\tGaps\tentropy\tRef_polarity\n")
 
         for i in range(len(ref)):
             for aapos in nucfreq[i].keys():
@@ -241,6 +242,9 @@ if pa.args.nucleotides:
                     nucfreq[i][aapos]["G"]["nonsyn"] = 0
                 if nucfreq[i][aapos]["C"]["nonsyn"] == {}:
                     nucfreq[i][aapos]["C"]["nonsyn"] = 0
+                if nucfreq[i][aapos]["-"]["nonsyn"] == {}:
+                    nucfreq[i][aapos]["-"]["nonsyn"] = 0
+
                 if nucfreq[i][aapos]["A"]["syn"] == {}:
                     nucfreq[i][aapos]["A"]["syn"] = 0
                 if nucfreq[i][aapos]["T"]["syn"] == {}:
@@ -249,6 +253,8 @@ if pa.args.nucleotides:
                     nucfreq[i][aapos]["G"]["syn"] = 0
                 if nucfreq[i][aapos]["C"]["syn"] == {}:
                     nucfreq[i][aapos]["C"]["syn"] = 0
+                if nucfreq[i][aapos]["-"]["syn"] == {}:
+                    nucfreq[i][aapos]["-"]["syn"] = 0
 
             NUC.write(str(site) + "\t" + str(aapos) + "\t" + ref[i] + "\t" +
                       str(nucfreq[i][aapos]["A"]["syn"]) + "\t" +
@@ -263,13 +269,18 @@ if pa.args.nucleotides:
             NUC.write(str(nucfreq[i][aapos]["C"]["syn"]) + "\t" +
                       str(nucfreq[i][aapos]["C"]["nonsyn"]) + "\t")
 
+            NUC.write(str(nucfreq[i][aapos]["-"]["syn"]) +
+                      str(nucfreq[i][aapos]["-"]["nonsyn"]) + "\t")
+
             NUC.write(str(ent[aapos]) + "\t" + str(ref_polarity[aapos]) + "\n")
 
             for nuc in nucfreq[i][aapos].keys():
                 if nucfreq[i][aapos][nuc] != {}:
                     increment(sub_mat[ref[i]], nuc)
+                    # sub_mat[ref[i]][nuc] += 1
 
         nucs = nucfreq[i].keys()
+
 
 # Total number of sites where particular substitutions are observed
     with open("{}_nucfreq.sum.txt".format(fileName), "a") as SUMNUC:
@@ -289,23 +300,22 @@ if pa.args.nucleotides:
 
     # Total number of mutations that are in non-synonymous or synonymous codons
     with open("{}_dnds.sum.txt".format(fileName), "a") as SUMDNDS:
+
         SUMDNDS.write("RefNuc\tdbNuc\tNonSyn\tSyn\n")
 
         for sub in NSnucfreq.keys():
 
-            if "-" not in sub:
+            refnuc = sub.split("=>")[0]
+            dbnuc = sub.split("=>")[1]
 
-                refnuc = sub.split("=>")[0]
-                dbnuc = sub.split("=>")[1]
+            if NSnucfreq[sub]["nonsyn"]:
+                ns_cnt = NSnucfreq[sub]["nonsyn"]
+            else:
+                ns_cnt = 0
+            if NSnucfreq[sub]["syn"]:
+                s_cnt = NSnucfreq[sub]["syn"]
+            else:
+                s_cnt = 0
 
-                if NSnucfreq[sub]["nonsyn"]:
-                    ns_cnt = NSnucfreq[sub]["nonsyn"]
-                else:
-                    ns_cnt = 0
-                if NSnucfreq[sub]["syn"]:
-                    s_cnt = NSnucfreq[sub]["syn"]
-                else:
-                    s_cnt = 0
-
-                SUMDNDS.write(refnuc + "\t" + dbnuc +
-                              "\t" + str(ns_cnt) + "\t" + str(s_cnt) + "\n")
+            SUMDNDS.write(refnuc + "\t" + dbnuc +
+                          "\t" + ns_cnt + "\t" + s_cnt + "\n")
