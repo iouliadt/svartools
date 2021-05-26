@@ -75,13 +75,14 @@ def extract_GBCoords():
                                                                new_coords[key]))
 
     for key in new_coords:
-
         # Custom file name provided by the user
         if pa.args.outfile:
             fileName = "{}.fasta".format(pa.args.outfile)
         # Default file name
         else:
             fileName = '{}.fasta'.format(key)
+
+        print("Writing to file {}".format(fileName))
 
         # Write to file
         with open(fileName, "w") as f:
