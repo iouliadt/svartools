@@ -32,15 +32,15 @@ def main():
         import check
         check.checkFormat()
 
-    # svartools count - create frequency/entropy tables
-    elif pa.args.command == 'count' and pa.args.gaps is None:
-        import count
-        count
-
-    # svartools count - including gaps
+    # svartools count - create frequency/entropy tables including gaps
     elif pa.args.command == 'count' and pa.args.gaps:
         import countGaps
         countGaps
+
+    # svartools count - create frequency/entropy tables
+    elif pa.args.command == 'count':
+        import count
+        count
 
 
 if __name__ == "__main__":
