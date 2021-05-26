@@ -8,6 +8,7 @@ import parseArgs as pa
 def extract_GBCoords():
 
     coordinates = {}
+    genes = []
     # * Parse genbank file
     gbFile = SeqIO.parse(pa.args.genbank, "genbank")
     for record in gbFile:
@@ -16,6 +17,7 @@ def extract_GBCoords():
         for f in record.features:
             # Find coding regions and gene/id to populate dict
             if f.type == "CDS" and "gene" in f.qualifiers:
+                genes.append(f.qualifiers['gene'])
                 i = 1
                 # If key already exists in the dict,
                 if f.qualifiers["gene"][0] in coordinates.keys():
@@ -23,6 +25,15 @@ def extract_GBCoords():
                     f.qualifiers["gene"][0] += '_' + str(i)
                     i += 1
                 coordinates[f.qualifiers["gene"][0]] = f.location
+
+    # Conver list of lists to single list
+    flattenedGenes = [val for sublist in genes for val in sublist]
+
+    # Check if gene exists in GenBank file
+    if pa.args.gene not in flattenedGenes and pa.args.gene is not None:
+        print("Gene {} does not exist in the GenBank file. "
+              "Please provide a valid gene name".format(pa.args.gene))
+        exit()
 
     # * Open alignment file
     input_file = pa.input_file
@@ -53,8 +64,8 @@ def extract_GBCoords():
 
     for key in coordinates:
 
-        if pa.args.gene in key:
-            # check if coordinates are joined (eg for ORF1ab)
+        if pa.args.gene is None or pa.args.gene in key:
+
             if type(coordinates[key]) == CompoundLocation:
 
                 for i, f in enumerate(coordinates[key].parts):
@@ -63,16 +74,10 @@ def extract_GBCoords():
                                                positions[coordinates[key].parts[i].end]))
                 new_coords[key] = CompoundLocation(loc)
 
-                print("Extracting gene {}, region {}".format(pa.args.gene,
-                                                               new_coords[key]))
-
             else:
 
                 new_coords[key] = FeatureLocation(positions[coordinates[key].parts[0].start],
                                                   positions[coordinates[key].parts[0].end])
-
-                print("Extracting gene {}, region {}".format(pa.args.gene,
-                                                               new_coords[key]))
 
     for key in new_coords:
         # Custom file name provided by the user
@@ -82,7 +87,8 @@ def extract_GBCoords():
         else:
             fileName = '{}.fasta'.format(key)
 
-        print("Writing to file {}".format(fileName))
+        print("Extracting region {} and "
+              "writing to file {}".format(new_coords[key], fileName))
 
         # Write to file
         with open(fileName, "w") as f:
