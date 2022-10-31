@@ -92,7 +92,7 @@ Example:
 
 - **count** -nuc 
 
-The output will be a csv file with columns that correspond to the reference nucleotide at each site, synonymous/ nonsynonymous nucleotide count, entropy and polarity of the corresponding aminoacid, so that each line shows how many times a single nucleotide mutation has been found at a site. This command also generates a summary nucfreq table showing the total number of sites where particular substitutions are observed, and a table with the total number of mutations that are in non-synonymous or synonymous codons. \
+The output will be a csv file with columns that correspond to the reference nucleotide at each site, synonymous/ nonsynonymous nucleotide count, entropy and polarity of the corresponding amino acid, so that each line shows how many times a single nucleotide mutation has been found at a site. This command also generates a summary nucfreq table showing the total number of sites where particular substitutions are observed, and a table with the total number of mutations that are in non-synonymous or synonymous codons. \
 Example:
 
 - nucfreq table
